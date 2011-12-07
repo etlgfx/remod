@@ -1,5 +1,7 @@
 <?php
 
+require_once PATH_LIB .'PDOFactory.class.php';
+
 class LayoutDefaults {
 	public $layout_id;
 	public $data;

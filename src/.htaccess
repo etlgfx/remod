@@ -1,0 +1,3 @@
+RewriteEngine on
+RewriteBase /~eric/remod/src/
+RewriteRule ^(.*)$  index.php   [QSA,L]

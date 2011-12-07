@@ -7,10 +7,9 @@ class Layout extends AbstractModel {
 	public $defaults;
 
 	public function __construct($id) {
-		$dbh = new PDO('mysql:host=localhost;dbname=social_apps', 'root', '');
+		$dbh = PDOFactory::PDO();
 
 		$stmt = $dbh->prepare('SELECT id, uuid, template, created_ts, modified_ts, status FROM layouts WHERE id = :id');
-		//$stmt = $dbh->prepare('SELECT id, uuid, created_ts, modified_ts, status FROM layouts WHERE id = :id');
 		$stmt->bindParam(':id', $id);
 
 		if ($stmt->execute()) {

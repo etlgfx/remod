@@ -7,7 +7,7 @@ class LayoutDefaults {
 	public function __construct($id) {
 		$this->data = array();
 
-		$dbh = new PDO('mysql:host=localhost;dbname=social_apps', 'root', '');
+		$dbh = PDOFactory::PDO();
 
 		$stmt = $dbh->prepare('SELECT name, value FROM layouts_defaults_data WHERE layout_id = :id');
 		$stmt->bindParam(':id', $id);

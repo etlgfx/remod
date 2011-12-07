@@ -7,7 +7,7 @@ class Page extends AbstractModel {
 	public $layout;
 
 	public function __construct($slug) {
-		$dbh = new PDO('mysql:host=localhost;dbname=social_apps', 'root', '');
+		$dbh = PDOFactory::PDO();
 
 		if (preg_match('#^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$#', $slug)) {
 			$stmt = $dbh->prepare('SELECT * FROM pages WHERE pages.uuid = :slug');

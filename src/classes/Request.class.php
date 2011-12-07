@@ -18,6 +18,7 @@ class Request {
 
 class RenderRequest extends Request {
 	protected $object_slug;
+	protected $parts;
 
 	public function __construct(array $parts) {
 		parent::__construct('layout');
@@ -27,10 +28,11 @@ class RenderRequest extends Request {
 		}
 
 		$this->object_slug = $parts[0];
+		$this->parts = array_slice($parts, 1);
+	}
 
-		if (isset($parts[1])) {
-			var_export($parts[1]);
-		}
+	public function getSlug() {
+		return $this->object_slug;
 	}
 }
 

@@ -4,12 +4,16 @@ define('PATH', __DIR__ .'/');
 define('PATH_LIB', PATH . 'classes/');
 
 require_once PATH_LIB .'Dispatcher.class.php';
+require_once PATH_LIB .'model/Page.class.php';
 
 class NotFoundException extends Exception {}
 
 class LayoutController extends Controller {
 	public function execute() {
-		echo 'execute';
+		$slug = $this->request->getSlug();
+
+		$page = new Page($slug);
+		echo $page->layout->render();//defaults->data);
 	}
 }
 

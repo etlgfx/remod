@@ -7,9 +7,9 @@ require_once PATH_LIB .'Controller.class.php';
 class Dispatcher {
 	private $request;
 
-	public function __construct() {
+	public function __construct($uri) {
 		$router = new Router();
-		$this->request = $router->route();
+		$this->request = $router->route($uri);
 
 		$this->execute();
 	}

@@ -2,6 +2,7 @@
 
 define('PATH', __DIR__ .'/');
 define('PATH_LIB', PATH . 'classes/');
+define('PATH_CONFIG', '/etc/syncapse/remod/');
 
 require_once PATH_LIB .'Dispatcher.class.php';
 require_once PATH_LIB .'model/Page.class.php';
@@ -18,7 +19,7 @@ class LayoutController extends Controller {
 }
 
 try {
-	new Dispatcher();
+	new Dispatcher($_SERVER['REQUEST_URI']);
 }
 catch (NotFoundException $e) {
 	header('HTTP/1.0 404 Not Found');

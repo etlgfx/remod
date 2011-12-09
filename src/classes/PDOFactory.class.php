@@ -7,7 +7,12 @@ class PDOFactory {
 	public static function PDO() {
 		if (self::$dbh === null) {
 
-			$ini = parse_ini_file(PATH .'config/config.ini', true);
+			if (file_exists(PATH_CONFIG .'config.ini')) {
+				$ini = parse_ini_file(PATH_CONFIG .'config.ini', true);
+			}
+			else {
+				$ini = parse_ini_file(PATH .'../config/config.ini', true);
+			}
 
 			if (!isset(
 				$ini['pdo']['driver'],
@@ -23,7 +28,7 @@ class PDOFactory {
 			self::$dbh = new PDO($ini['driver'] .':host='. $ini['host'] .';dbname='. $ini['dbname'], $ini['user'], $ini['password']);
 		}
 
-		return self::$dhb;
+		return self::$dbh;
 	}
 }
 

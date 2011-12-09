@@ -11,7 +11,7 @@ class PDOFactory {
 				$ini = parse_ini_file(PATH_CONFIG .'config.ini', true);
 			}
 			else {
-				$ini = parse_ini_file(PATH .'../config/config.ini', true);
+				$ini = parse_ini_file(PATH .'/config/config.ini', true);
 			}
 
 			if (!isset(

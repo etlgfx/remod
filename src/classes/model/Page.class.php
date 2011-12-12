@@ -16,17 +16,16 @@ class Page extends AbstractModel {
 			$stmt = $dbh->prepare('SELECT * FROM pages WHERE pages.id = :slug');
 		}
 		else {
-			throw new NotFoundException('Unable to fetch page metadata, malformed slug');
+			throw new NotFoundException('Unable to fetch page metadata, malformed slug: '. var_export($slug, true));
 		}
 
 		$stmt->bindParam(':slug', $slug);
 
-		if ($stmt->execute()) {
-			$this->_model_data = $stmt->fetch(PDO::FETCH_OBJ);
+		if ($stmt->execute() && $this->_model_data = $stmt->fetch(PDO::FETCH_OBJ)) {
 			$this->layout = new Layout($this->_model_data->layout_id);
 		}
 		else {
-			throw new NotFoundException('Page not found');
+			throw new NotFoundException('Page not found: '. var_export($slug, true));
 		}
 	}
 }

@@ -28,6 +28,9 @@ class LayoutDefaults {
 				}
 			}
 		}
+		else {
+			throw new NotFoundException('Error fetching layout defaults: '. var_export($id, true));
+		}
 	}
 
 	public function get($module_name) {

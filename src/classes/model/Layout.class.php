@@ -12,11 +12,9 @@ class Layout extends AbstractModel {
 		$stmt = $dbh->prepare('SELECT id, uuid, template, created_ts, modified_ts, status FROM layouts WHERE id = :id');
 		$stmt->bindParam(':id', $id);
 
-		if ($stmt->execute()) {
-			$this->_model_data = $stmt->fetch(PDO::FETCH_OBJ);
-		}
+		if ($stmt->execute() && $this->_model_data = $stmt->fetch(PDO::FETCH_OBJ));
 		else {
-			throw new NotFoundException('Layout not found: '. $id);
+			throw new NotFoundException('Layout not found: '. var_export($id, true));
 		}
 
 		$this->defaults = new LayoutDefaults($id);

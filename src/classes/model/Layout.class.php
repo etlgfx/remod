@@ -32,13 +32,16 @@ class Layout extends AbstractModel {
 		$xpath = new DOMXpath($dom);
 		$modules = $xpath->query('//module');
 
-		foreach ($modules as $module) {
-			echo $module->getAttribute('m:uuid') . PHP_EOL;
-			echo $module->getAttribute('m:name') . PHP_EOL;
-			$id = trim($module->getAttribute('id'));
-
-			var_export($this->defaults->get($id));
+		foreach ($modules as $module_node) {
+			$id = trim($module_node->getAttribute('id'));
+			$f = $dom->createDocumentFragment();
+			//$f->appendXML($module->render());
+			$f->appendXML('<p>'. $module_node->getAttribute('m:uuid') .'</p>');
+			$parent = $module_node->parentNode;
+			$parent->replaceChild($f, $module_node);
 		}
+
+		echo $dom->saveHTML();
 	}
 }
 

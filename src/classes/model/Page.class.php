@@ -2,9 +2,11 @@
 
 require_once PATH_LIB .'model/AbstractModel.class.php';
 require_once PATH_LIB .'model/Layout.class.php';
+require_once PATH_LIB .'model/PageProperties.class.php';
 
 class Page extends AbstractModel {
 	public $layout;
+	public $properties;
 
 	public function __construct($slug) {
 		$dbh = PDOFactory::PDO();
@@ -23,10 +25,14 @@ class Page extends AbstractModel {
 
 		if ($stmt->execute() && $this->_model_data = $stmt->fetch(PDO::FETCH_OBJ)) {
 			$this->layout = new Layout($this->_model_data->layout_id);
+			$this->properties = new PageProperties($this->_model_data->id);
 		}
 		else {
 			throw new NotFoundException('Page not found: '. var_export($slug, true));
 		}
+	}
+
+	public function render() {
 	}
 }
 

@@ -6,16 +6,16 @@ class LayoutDefaults {
 	public $layout_id;
 	public $data;
 
-	public function __construct($id) {
+	public function __construct($layout_id) {
 		$this->data = array();
 
 		$dbh = PDOFactory::PDO();
 
 		$stmt = $dbh->prepare('SELECT name, value FROM layouts_defaults_data WHERE layout_id = :id');
-		$stmt->bindParam(':id', $id);
+		$stmt->bindParam(':id', $layout_id);
 
 		if ($stmt->execute()) {
-			$this->layout_id = $id;
+			$this->layout_id = $layout_id;
 
 			while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
 				$name = explode('.', $row['name']);
@@ -29,7 +29,7 @@ class LayoutDefaults {
 			}
 		}
 		else {
-			throw new NotFoundException('Error fetching layout defaults: '. var_export($id, true));
+			throw new NotFoundException('Error fetching layout defaults: '. var_export($layout_id, true));
 		}
 	}
 

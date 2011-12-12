@@ -32,9 +32,14 @@ class Layout extends AbstractModel {
 
 		foreach ($modules as $module_node) {
 			$id = trim($module_node->getAttribute('id'));
+
 			$f = $dom->createDocumentFragment();
-			//$f->appendXML($module->render());
+
+			//$module = new Module($uuid);
+			//$f->appendXML($module->render($this->default->get($id), $request, $config));
+
 			$f->appendXML('<p>'. $module_node->getAttribute('m:uuid') .'</p>');
+
 			$parent = $module_node->parentNode;
 			$parent->replaceChild($f, $module_node);
 		}

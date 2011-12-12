@@ -13,7 +13,7 @@ fs.readFile(code, function (err, data) {
 
 switch(mode) {
         case 'render':
-                console.log(context.render('', '', ''));
+                console.log(context.render());
                 break;
         case 'admin':
                 console.log(context.renderAdmin());

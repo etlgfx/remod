@@ -5,13 +5,14 @@ class Module {
     private $javascript_code;
     private $javascript_header;
 
-    private $lib_path = '/lib';
-    private $js_path = '/js';
-
     private $valid_render_modes = array(
         'render',
         'admin'
     );
+
+    const LIB_PATH = '/lib';
+    const JS_PATH = '/js';
+    const NODE_BINARY = '/usr/bin/node';
 
     function __construct($path) {
         // Make sure we have no trailing slash
@@ -29,15 +30,13 @@ class Module {
 
     public function getOutput($mode = 'render') {
         if( !$this->isValidRenderMode($mode) ) {
-            // TODO throw some exception
+            throw new Exception('Invalid module render mode');
         }
 
         $code_file = $this->writeJavascriptCode();
         $header_file = $this->writeJavascriptHeader();
 
-        echo $code_file . PHP_EOL;
-
-        $output = $this->runJavascript($code_file, $mode);
+        return $this->runJavascript($code_file, $mode);
     }
 
     public function getJavascriptCode() {
@@ -53,7 +52,7 @@ class Module {
         $fp = fopen($tmp_file, 'w');
 
         if ( !fwrite($fp, $data) ) {
-            // TODO throw some exception
+            throw new Exception('Error writing JS to file');
         }
         return $tmp_file;
     }
@@ -82,16 +81,16 @@ class Module {
     }
 
     private function getLibs() {
-        return $this->loadSource($this->module_path . $this->lib_path);
+        return $this->loadSource($this->module_path . self::LIB_PATH);
     }
 
     private function getHeader() {
-        return $this->loadSource($this->module_path . $this->js_path);
+        return $this->loadSource($this->module_path . self::JS_PATH);
     }
 
     private function loadSource($path, $data = null) {
         if ( !is_dir($path) ) {
-            // TODO throw exception
+            throw new Exception('Invalid JS source path');
         }
 
         $handle = opendir($path);
@@ -118,14 +117,9 @@ class Module {
     }
 
     private function runJavascript($code, $mode) {
-        $command = '/usr/bin/node /tmp/run_module.js ' . $code . ' ' . $mode;
-
-        $output = '';
-        $blh = system($code);
-        exec($code);
-        passthru($code);
+        $command = self::NODE_BINARY . ' ' . PATH . 'js/module.js ' . $code . ' ' . $mode ;
+        return shell_exec($command);
     }
-
 }
 
 ?>

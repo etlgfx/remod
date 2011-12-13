@@ -1,124 +1,38 @@
 <?php
 
-class Module {
-    private $module_path;
-    private $javascript_code;
-    private $javascript_header;
+require('PHPModule.class.php');
+//require('JSModule.class.php');
+
+abstract class Module {
+
+    const NODE_BINARY = '/usr/bin/node';
 
     private $valid_render_modes = array(
-        'render',
+        'view',
         'admin'
     );
 
-    const LIB_PATH = '/lib';
-    const JS_PATH = '/js';
-    const NODE_BINARY = '/usr/bin/node';
+    abstract public function render($mode);
 
-    function __construct($path) {
-        // Make sure we have no trailing slash
-        if ( $path[strlen($path) - 1] == '/' ) {
-            $path = substr($path, 0, strlen($path) - 1);
+    public static function factory($module_id) {
+        if (file_exists(PATH_CONFIG .'config.ini')) {
+            $ini = parse_ini_file(PATH_CONFIG .'config.ini', true);
+        } else {
+            $ini = parse_ini_file(PATH .'/config/config.ini', true);
         }
-
-        $this->module_path = $path;
-
-        $this->javascript_code = '';
-        $this->javascript_header = '';
-
-        $this->loadModule();
-    }
-
-    public function getOutput($mode = 'render') {
-        if( !$this->isValidRenderMode($mode) ) {
-            throw new Exception('Invalid module render mode');
+        if ( empty($ini['module']['class']) ) {
+            throw new Exception('Configuration is missing module class');
         }
+        $class = $ini['module']['class'] . 'Module';
 
-        $code_file = $this->writeJavascriptCode();
-        $header_file = $this->writeJavascriptHeader();
-
-        return $this->runJavascript($code_file, $mode);
-    }
-
-    public function getJavascriptCode() {
-        return $this->javascript_code;
-    }
-
-    public function getJavascriptHeader() {
-        return $this->javascript_header;
-    }
-
-    protected function writeToTempFile($data) {
-        $tmp_file = tempnam(sys_get_temp_dir(), uniqid());
-        $fp = fopen($tmp_file, 'w');
-
-        if ( !fwrite($fp, $data) ) {
-            throw new Exception('Error writing JS to file');
+        if( !class_exists($class) ) {
+            throw new Exception('Unable to instantiate module class: ' . $class);
         }
-        return $tmp_file;
+        return new $class($module_id);
     }
 
     protected function isValidRenderMode($mode) {
         return in_array($mode, $this->valid_render_modes);
-    }
-
-    protected function writeJavascriptCode() {
-        return $this->writeToTempFile($this->javascript_code);
-    }
-
-    protected function writeJavascriptHeader() {
-        return $this->writeToTempFile($this->javascript_header);
-    }
-
-    private function loadModule() {
-        // First we need the module.js code
-        $this->javascript_code = file_get_contents($this->module_path . '/module.js');
-
-        // Now load the libs
-        $this->javascript_code .= $this->getLibs();
-
-        // Grab the JS source to be placed in a <script> tag along with module output
-        $this->javascript_header = $this->getHeader();
-    }
-
-    private function getLibs() {
-        return $this->loadSource($this->module_path . self::LIB_PATH);
-    }
-
-    private function getHeader() {
-        return $this->loadSource($this->module_path . self::JS_PATH);
-    }
-
-    private function loadSource($path, $data = null) {
-        if ( !is_dir($path) ) {
-            throw new Exception('Invalid JS source path');
-        }
-
-        $handle = opendir($path);
-        if ( !$handle ) {
-            // TODO throw some exception
-        }
-
-        while (false !== ($file = readdir($handle))) {
-            if ( $file == '.' || $file == '..' ) {
-                continue;
-            }
-
-            if( is_dir($path . '/' . $file) ) {
-                return $this->loadSource($path . '/' . $file, $data);
-            }
-            $javascript_code = file_get_contents($path . '/' . $file);
-
-            if( !$javascript_code ) {
-                // TODO throw some other exception?
-            }
-            $data .= $javascript_code;
-        }
-        return $data;
-    }
-
-    private function runJavascript($code, $mode) {
-        $command = self::NODE_BINARY . ' ' . PATH . 'js/module.js ' . $code . ' ' . $mode ;
-        return shell_exec($command);
     }
 }
 

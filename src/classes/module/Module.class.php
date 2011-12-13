@@ -1,7 +1,7 @@
 <?php
 
 require('PHPModule.class.php');
-//require('JSModule.class.php');
+require('JSModule.class.php');
 
 abstract class Module {
 

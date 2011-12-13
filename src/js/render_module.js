@@ -17,7 +17,6 @@ Module = function(path) {
 
     this.context = this.vm.createContext();
 
-
     this.javascript_code = '';
     this.javascript_header = '';
 
@@ -86,3 +85,24 @@ Module.prototype.render = function() {
 Module.prototype.renderAdmin = function() {
     return this.context.renderAdmin();
 }
+
+
+var module_path = process.argv[2];
+var mode = process.argv[3];
+
+var myModule = new Module(module_path);
+
+switch(mode) {
+    case 'view':
+        output = myModule.render();
+        break;
+
+    case 'admin':
+        output = myModule.renderAdmin();
+        break;
+
+    default:
+        // TODO die?
+}
+
+console.log(output);

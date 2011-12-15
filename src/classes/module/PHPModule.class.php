@@ -8,13 +8,8 @@ class PHPModule extends Module {
     const LIB_PATH = '/lib';
     const JS_PATH = '/js';
 
-    function __construct($path) {
-        // Make sure we have no trailing slash
-        if ( $path[strlen($path) - 1] == '/' ) {
-            $path = substr($path, 0, strlen($path) - 1);
-        }
-
-        $this->module_path = $path;
+    function __construct($module_uuid) {
+        $this->module_path = $this->getModulePath($module_uuid);
 
         $this->javascript_code = '';
         $this->javascript_header = '';

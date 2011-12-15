@@ -23,7 +23,7 @@ Vagrant::Config.run do |config|
   # to this Vagrantfile), and adding some recipes and/or roles.
   
   config.vm.provision :chef_solo do |chef|
-    chef.cookbooks_path = "cookbooks"
+    chef.cookbooks_path = "vagrant-cookbooks"
     chef.add_recipe("main")
   end
 end

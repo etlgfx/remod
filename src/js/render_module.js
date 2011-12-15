@@ -78,27 +78,32 @@ Module.prototype.compile = function() {
     this.vm.runInContext(this.code, this.context);
 }
 
-Module.prototype.render = function() {
-    return this.context.render();
+Module.prototype.render = function(request, data, config) {
+    return this.context.render(request, data, config);
 }
 
-Module.prototype.renderAdmin = function() {
-    return this.context.renderAdmin();
+Module.prototype.renderAdmin = function(config) {
+    return this.context.renderAdmin(config);
 }
 
 
 var module_path = process.argv[2];
 var mode = process.argv[3];
+var module_data_file = process.argv[4];
+
+var fs = require('fs');
+
+var module_data = JSON.parse(fs.readFileSync(module_data_file, 'utf8'));
 
 var myModule = new Module(module_path);
 
 switch(mode) {
     case 'view':
-        output = myModule.render();
+        output = myModule.render(module_data["request"], module_data["config"], module_data["data"]);
         break;
 
     case 'admin':
-        output = myModule.renderAdmin();
+        output = myModule.renderAdmin(module_data["config"]);
         break;
 
     default:

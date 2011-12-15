@@ -17,15 +17,24 @@ class PHPModule extends Module {
         $this->loadModule();
     }
 
-    public function render($mode) {
+    public function render($mode, $data = array(), $request = array(), $config = array()) {
         if( !$this->isValidRenderMode($mode) ) {
             throw new Exception('Invalid module render mode');
         }
 
+        $temp_data = array(
+            'data' => $data,
+            'request' => $request,
+            'config' => $config,
+        );
+        $temp_file = $this->writeTempData(json_encode($temp_data));
+
+        // TODO Get CSS as well as javascript for <head>
         $code_file = $this->writeJavascriptCode();
         $header_file = $this->writeJavascriptHeader();
 
-        return $this->runJavascript($code_file, $mode);
+        // TODO output <head> contents
+        return $this->runJavascript($code_file, $temp_file, $mode);
     }
 
     public function getJavascriptCode() {
@@ -36,22 +45,12 @@ class PHPModule extends Module {
         return $this->javascript_header;
     }
 
-    protected function writeToTempFile($data) {
-        $tmp_file = tempnam(sys_get_temp_dir(), uniqid());
-        $fp = fopen($tmp_file, 'w');
-
-        if ( !fwrite($fp, $data) ) {
-            throw new Exception('Error writing JS to file');
-        }
-        return $tmp_file;
-    }
-
     protected function writeJavascriptCode() {
-        return $this->writeToTempFile($this->javascript_code);
+        return $this->writeTempData($this->javascript_code, 'js_code_');
     }
 
     protected function writeJavascriptHeader() {
-        return $this->writeToTempFile($this->javascript_header);
+        return $this->writeTempData($this->javascript_header, 'js_header_');
     }
 
     private function loadModule() {
@@ -101,8 +100,8 @@ class PHPModule extends Module {
         return $data;
     }
 
-    private function runJavascript($code, $mode) {
-        $command = self::NODE_BINARY . ' ' . PATH . 'js/module.js ' . $code . ' ' . $mode ;
+    private function runJavascript($code, $temp_file, $mode) {
+        $command = self::NODE_BINARY . ' ' . PATH . "js/module.js $mode $code $temp_file" ;
         return shell_exec($command);
     }
 }

@@ -4,7 +4,6 @@ require('PHPModule.class.php');
 require('JSModule.class.php');
 
 abstract class Module {
-
     const NODE_BINARY = '/usr/bin/node';
 
     private $valid_render_modes = array(
@@ -12,7 +11,7 @@ abstract class Module {
         'admin'
     );
 
-    abstract public function render($mode);
+    abstract public function render($mode, $data, $request, $config);
 
     public static function factory($module_id) {
         $class = Config::read('module.class') . 'Module';
@@ -32,6 +31,16 @@ abstract class Module {
             throw new Exception('Module not found: ' . Config::read('module.repo_path') . $uuid);
         }
         return Config::read('module.repo_path') . $uuid;
+    }
+
+    protected function writeTempData($data, $prefix = 'data_') {
+        // TODO Better checking for failure
+        $file = tempnam(sys_get_temp_dir(), $prefix);
+        $fp = fopen($file, 'w');
+        if ( !fwrite($fp, $data) ) {
+            throw new Exception('Error writing module data to temp file');
+        }
+        return $file;
     }
 }
 

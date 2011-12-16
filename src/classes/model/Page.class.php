@@ -1,9 +1,5 @@
 <?php
 
-require_once PATH_LIB .'model/AbstractModel.class.php';
-require_once PATH_LIB .'model/Layout.class.php';
-require_once PATH_LIB .'model/PageProperties.class.php';
-
 class Page extends AbstractModel {
 	public $layout;
 	public $properties;

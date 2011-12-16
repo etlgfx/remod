@@ -1,8 +1,5 @@
 <?php
 
-require_once PATH_LIB .'model/AbstractModel.class.php';
-require_once PATH_LIB .'model/LayoutDefaults.class.php';
-
 class Layout extends AbstractModel {
 	public $defaults;
 

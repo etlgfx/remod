@@ -4,19 +4,9 @@ define('PATH', __DIR__ .'/');
 define('PATH_LIB', PATH . 'classes/');
 define('PATH_CONFIG', '/etc/syncapse/remod/');
 
-require_once PATH_LIB .'Dispatcher.class.php';
-require_once PATH_LIB .'model/Page.class.php';
+require_once PATH_LIB .'Autoload.class.php';
 
-class NotFoundException extends Exception {}
-
-class LayoutController extends Controller {
-	public function execute() {
-		$slug = $this->request->getSlug();
-
-		$page = new Page($slug);
-		echo $page->layout->render();
-	}
-}
+new Autoload();
 
 try {
 	new Dispatcher($_SERVER['REQUEST_URI']);

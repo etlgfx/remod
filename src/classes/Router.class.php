@@ -1,7 +1,5 @@
 <?php
 
-require_once PATH_LIB .'Request.class.php';
-
 class Router {
 	protected $routes;
 

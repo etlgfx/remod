@@ -1,9 +1,5 @@
 <?php
 
-require_once PATH_LIB .'Router.class.php';
-require_once PATH_LIB .'Request.class.php';
-require_once PATH_LIB .'Controller.class.php';
-
 class Dispatcher {
 	private $request;
 

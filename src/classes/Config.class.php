@@ -27,26 +27,28 @@ class Config {
         $key = explode('.', $key, self::KEY_NEST_LIMIT);
         $depth = count($key);
 
+        $inst = self::getInstance();
+
         switch($depth) {
             case 1:
-                if ( !empty(Config::getInstance()->config[$key[0]]) ) {
-                    return Config::getInstance()->config[$key[0]];
+                if ( !empty($inst->config[$key[0]]) ) {
+                    return $inst->config[$key[0]];
                 } else {
                     throw new Exception('Missing configuration: ' . $key[0]);
                 }
                 break;
 
             case 2:
-                if ( !empty(Config::getInstance()->config[$key[0]][$key[1]]) ) {
-                    return Config::getInstance()->config[$key[0]][$key[1]];
+                if ( !empty($inst->config[$key[0]][$key[1]]) ) {
+                    return $inst->config[$key[0]][$key[1]];
                 } else {
                     throw new Exception('Missing configuration: ' . $key[0] . '.' . $key[1]);
                 }
                 break;
 
             case 3:
-                if ( !empty(Config::getInstance()->config[$key[0]][$key[1]][$key[2]]) ) {
-                    return Config::getInstance()->config[$key[0]][$key[1]][$key[2]];
+                if ( !empty($inst->config[$key[0]][$key[1]][$key[2]]) ) {
+                    return $inst->config[$key[0]][$key[1]][$key[2]];
                 } else {
                     throw new Exception('Missing configuration: ' . $key[0] . '.' . $key[1] . '.' . $key[2]);
                 }

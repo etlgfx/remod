@@ -1,6 +1,6 @@
 <?php
 
-class Page extends AbstractModel {
+abstract class Page extends AbstractModel {
 	public $layout;
 	public $properties;
 
@@ -28,8 +28,14 @@ class Page extends AbstractModel {
 		}
 	}
 
-	public function render() {
+	public function render($uri) {
+        echo $this->layout->render($uri, $this->parseRequest());
 	}
+
+    /**
+     * @return array
+     */
+    abstract function parseRequest();
 }
 
 ?>

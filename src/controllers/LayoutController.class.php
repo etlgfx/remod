@@ -4,8 +4,8 @@ class LayoutController extends Controller {
 	public function execute() {
 		$slug = $this->request->getSlug();
 
-		$page = new Page($slug);
-		echo $page->layout->render();
+		$page = new PageFacebook($slug);
+		echo $page->render($_SERVER['REQUEST_URI']);
 	}
 }
 

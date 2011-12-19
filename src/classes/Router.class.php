@@ -5,13 +5,12 @@ class Router {
 
 	public function __construct() {
 		$this->routes = array(
-			'#renderPageEdit/([^/]+)/([^/]+)$#i' => 'renderPageEdit',
+			'#renderPageEdit/([^/]+)/([^/]+)\??.*$#i' => 'renderPageEdit',
 			'#renderPage/([^/]+)/([^/]+)/callback/([^/]+)$#i' => 'renderCallback',
 			'#renderPage/([^/]+)$#i' => 'renderPage',
 			'#renderLayoutPreview/([^/]+)$#i' => 'renderLayoutPreview',
 			'#renderPageView/([^/]+)/([^/]+)$#i' => 'renderPageView', //TODO - verify what this is for
 			//TODO where is the call to module.renderAdmin?
-
 		);
 	}
 

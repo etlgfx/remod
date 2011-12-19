@@ -9,7 +9,11 @@ require_once PATH_LIB .'Autoload.class.php';
 new Autoload();
 
 try {
-	new Dispatcher($_SERVER['REQUEST_URI']);
+	new Dispatcher(
+		strpos($_SERVER['REQUEST_URI'], '?') ?
+			strstr($_SERVER['REQUEST_URI'], '?', true) :
+			$_SERVER['REQUEST_URI']
+	);
 }
 catch (NotFoundException $e) {
 	header('HTTP/1.0 404 Not Found');

@@ -65,14 +65,14 @@ class PHPModule extends Module {
     }
 
     private function getLibs() {
-        return $this->loadSource($this->module_path . self::LIB_PATH);
+        return $this->loadSource($this->module_path . self::LIB_PATH, 'js');
     }
 
     private function getHeader() {
-        return $this->loadSource($this->module_path . self::JS_PATH);
+        return $this->loadSource($this->module_path . self::JS_PATH, 'js');
     }
 
-    private function loadSource($path, $data = null) {
+    private function loadSource($path, $extension, $data = null) {
         if ( !is_dir($path) ) {
             throw new Exception('Invalid JS source path');
         }
@@ -88,14 +88,17 @@ class PHPModule extends Module {
             }
 
             if( is_dir($path . '/' . $file) ) {
-                return $this->loadSource($path . '/' . $file, $data);
+                return $this->loadSource($path . '/' . $file, $extension, $data);
             }
-            $javascript_code = file_get_contents($path . '/' . $file);
 
-            if( !$javascript_code ) {
+            if ( strpos($file, '.' . $extension) !== false ) {
+                $contents = file_get_contents($path . '/' . $file);
+            }
+
+            if( !$contents ) {
                 throw new Exception('Error reading file: ' . $path . '/' . $file);
             }
-            $data .= $javascript_code;
+            $data .= $contents;
         }
         return $data;
     }

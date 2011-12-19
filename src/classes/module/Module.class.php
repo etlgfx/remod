@@ -1,8 +1,5 @@
 <?php
 
-require('PHPModule.class.php');
-require('JSModule.class.php');
-
 abstract class Module {
     const NODE_BINARY = '/usr/bin/node';
 

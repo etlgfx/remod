@@ -17,7 +17,7 @@ class Layout extends AbstractModel {
 		$this->defaults = new LayoutDefaults($id);
 	}
 
-	public function render() {
+	public function render($uri, $request) {
 		$dom = new DOMDocument('1.0', 'UTF-8');
 
 		if (!$dom->loadXML($this->_model_data->template)) {
@@ -29,19 +29,21 @@ class Layout extends AbstractModel {
 
 		foreach ($modules as $module_node) {
 			$id = trim($module_node->getAttribute('id'));
+			$uuid = '4eb436c8-38fc-426f-a53f-2b5c0acc4267' /*$module_node->getAttribute('m:uuid')*/;
 
 			$f = $dom->createDocumentFragment();
 
-			//$module = new Module($uuid);
-			//$f->appendXML($module->render($this->default->get($id), $request, $config));
-
-			$f->appendXML('<p>'. $module_node->getAttribute('m:uuid') .'</p>');
+			$module = new JSModule($uuid);
+			//TODO get content sets 
+			if (!$f->appendXML($module->render('view', array(), $request, $this->defaults->get($id)))) {
+				throw new Exception('There was an error appending the XML to the document');
+			}
 
 			$parent = $module_node->parentNode;
 			$parent->replaceChild($f, $module_node);
 		}
 
-		echo $dom->saveHTML();
+		return $dom->saveHTML();
 	}
 }
 

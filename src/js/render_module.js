@@ -17,7 +17,7 @@ function readFiles(dir, ext) {
             // If this is a directory, recurse into it
             file_stat = fs.statSync(full);
             if ( file_stat.isDirectory() ) {
-                content += findFiles(full, ext);
+                content += readFiles(full, ext);
             }
         });
     }

@@ -1,113 +1,68 @@
-Module = function(path) {
-    this.path_util = require('path');
-    this.vm = require('vm');
-    this.fs = require('fs');
+vm = require('vm');
+fs = require('fs');
+path = require('path');
 
-    // Make sure we have no trailing slash
-    if ( path[path.length - 1] == '/' ) {
-        path = path.substr(0, path.length - 1);
-    }
-    this.path = path;
-
-    this.libs = [];
-//    this.css = [];
-//    this.header_scripts = [];
-
-    this.code = this.fs.readFileSync(path + '/module.js');
-
-    this.context = this.vm.createContext();
-
-    this.javascript_code = '';
-    this.javascript_header = '';
-
-    this.loadModule();
-}
-
-Module.prototype.loadModule = function() {
-    this.libs = this.findFiles(this.path + '/libs', 'js');
-//    this.css = this.findFiles(this.path + '/js', 'css');
-    this.compile();
-}
-
-Module.prototype.findFiles = function(dir, ext) {
+function readFiles(dir, ext) {
     // Recursively collect files for use in modules.
-    var files = [];
-    if(this.path_util.existsSync(dir)) {
-        this.fs.readdirSync(dir).forEach(function(f) {
+    var content = '';
+    if(path.existsSync(dir)) {
+        fs.readdirSync(dir).forEach(function(f) {
             var full = path.join(dir, f);
-            if(this.path_util.existsSync(full)) {
-                var more = findFiles(full, ext);
-                files = files.concat(more);
-            } else if(f.match('.' + ext + '$')) {
-                files.push(full);
+
+            // If this file matches our extension, read its contents
+            if ( f.match('.' + ext + '$') ) {
+                content += fs.readFileSync(full, 'utf8');
+            }
+
+            // If this is a directory, recurse into it
+            file_stat = fs.statSync(full);
+            if ( file_stat.isDirectory() ) {
+                content += findFiles(full, ext);
             }
         });
     }
-    return files;
+    return content;
 }
 
-//Module.prototype.findJsFiles = function(dir) {
-//    return findFiles(dir, 'js');
-//}
-//
-//Module.prototype.findCssFiles = function(dir) {
-//    return findFiles(dir, 'css');
-//}
-
-//Module.prototype.compile = function() {
-//    this.sandbox = {};
-//    this.compileLibs();
-//    this.compileCode(this.code, MODULE_FILENAME);
-//}
-
-Module.prototype.findLibs = function() {
-    var files = [];
-    this.libs.forEach(function(p) {
-        files = files.concat(findJsFiles(p));
-    });
-    return files;
-}
-
-Module.prototype.compile = function() {
-    // Compile libs and append to code
-    var libs = this.findLibs().forEach(function(f) {
-        libs += this.fs.readFileSync(path.join(process.cwd(), f));
-    });
-    this.code = this.code + libs;
-
-    this.vm.runInContext(this.code, this.context);
-}
-
-Module.prototype.render = function(request, data, config) {
-    return this.context.render(request, data, config);
-}
-
-Module.prototype.renderAdmin = function(config) {
-    return this.context.renderAdmin(config);
-}
-
-
+// Set up our arguments from the command line
 var module_path = process.argv[2];
 var mode = process.argv[3];
 var module_data_file = process.argv[4];
 
-var fs = require('fs');
+// Read in the contents of the related files
+var libs = readFiles(module_path + '/libs', 'js');
+var css = readFiles(module_path + '/js', 'css');
+var js = readFiles(module_path + '/js', 'js');
 
+// Start off the code with the module.js file, and create
+// a context to hold the code for execute later
+var code = fs.readFileSync(module_path + '/module.js');
+var context = vm.createContext();
+
+// Grab module data passed from app via JSON
 var module_data = JSON.parse(fs.readFileSync(module_data_file, 'utf8'));
 
-var myModule = new Module(module_path);
+// Append the contents of the libs directory to the code
+code = code + libs;
 
+// Load the code into the context
+vm.runInContext(code, context);
+
+// Finally, run the code based on the mode argument
 switch(mode) {
     case 'view':
-        output = myModule.render(module_data["request"], module_data["config"], module_data["data"]);
+        output = context.render(module_data["request"], module_data["config"], module_data["data"]);
         break;
 
     case 'admin':
-        output = myModule.renderAdmin(module_data["config"]);
+        output = context.renderAdmin(module_data["config"]);
         break;
 
     default:
         // TODO die?
 }
 
+// Display the output of our module
+console.log('<script>' + js + '</script>');
+console.log('<style>' + css + '</style>');
 console.log(output);

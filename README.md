@@ -18,5 +18,5 @@ To setup the project simply:
 
 	git clone
 	vagrant up
-
+	echo '192.168.56.10 remod.dev' >> /etc/hosts
 

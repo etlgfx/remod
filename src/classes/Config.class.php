@@ -32,7 +32,7 @@ class Config {
             if( empty($obj[$value]) ) {
                 throw new Exception('Invalid config key: ' . $key);
             }
-            $obj = $obj[$value];
+            $obj =& $obj[$value];
         }
         return $obj;
     }

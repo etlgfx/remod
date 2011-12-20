@@ -6,7 +6,7 @@ existing components, but to be easier to develop, a lot more responsive, a lot
 more scalable, and a lot faster.
 
 Getting Started
-===
+---
 One of our most important goals is for this project to be easy to develop for.
 To accomplish this goal, we have chosen to use Vagrant and Chef to allow
 developers to setup a working environment as quickly as possible.
@@ -17,7 +17,6 @@ a ruby gem. See [Vagrant Getting Started](http://vagrantup.com/docs/getting-star
 To setup the project simply:
 
 	git clone
-	vagrant box add arch http://TODO
 	vagrant up
 
 

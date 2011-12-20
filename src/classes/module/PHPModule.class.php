@@ -3,7 +3,7 @@
 class PHPModule extends Module {
     private $module_path;
     private $javascript_code;
-    private $javascript_header;
+    private $inline;
 
     const LIB_PATH = '/lib';
     const JS_PATH = '/js';
@@ -27,30 +27,17 @@ class PHPModule extends Module {
             'request' => $request,
             'config' => $config,
         );
-        $temp_file = $this->writeTempData(json_encode($temp_data));
+        $module_data_file = $this->writeTempData(json_encode($temp_data));
 
         // TODO Get CSS as well as javascript for <head>
         $code_file = $this->writeJavascriptCode();
-        $header_file = $this->writeJavascriptHeader();
 
         // TODO output <head> contents
-        return $this->runJavascript($code_file, $temp_file, $mode);
-    }
-
-    public function getJavascriptCode() {
-        return $this->javascript_code;
-    }
-
-    public function getJavascriptHeader() {
-        return $this->javascript_header;
+        return $this->runJavascript($code_file, $module_data_file, $mode);
     }
 
     protected function writeJavascriptCode() {
         return $this->writeTempData($this->javascript_code, 'js_code_');
-    }
-
-    protected function writeJavascriptHeader() {
-        return $this->writeTempData($this->javascript_header, 'js_header_');
     }
 
     private function loadModule() {
@@ -60,19 +47,22 @@ class PHPModule extends Module {
         // Now load the libs
         $this->javascript_code .= $this->getLibs();
 
-        // Grab the JS source to be placed in a <script> tag along with module output
-        $this->javascript_header = $this->getHeader();
+        // Grab the js/css to be placed inline above the module
+        $this->inline = $this->getInline();
     }
 
     private function getLibs() {
         return $this->loadSource($this->module_path . self::LIB_PATH, 'js');
     }
 
-    private function getHeader() {
-        return $this->loadSource($this->module_path . self::JS_PATH, 'js');
+    private function getInline() {
+        $inline = '<script>' . $this->loadSource($this->module_path . self::JS_PATH, 'js') . '</script>';
+        $inline .= '<style>' . $this->loadSource($this->module_path . self::JS_PATH, 'css') . '</style>';
+
+        return $inline;
     }
 
-    private function loadSource($path, $extension, $data = null) {
+    private function loadSource($path, $extension) {
         if ( !is_dir($path) ) {
             throw new Exception('Invalid JS source path');
         }
@@ -82,30 +72,28 @@ class PHPModule extends Module {
             throw new Exception('Unable to open path: ' . $path);
         }
 
+        $data = '';
         while (false !== ($file = readdir($handle))) {
             if ( $file == '.' || $file == '..' ) {
                 continue;
             }
 
             if( is_dir($path . '/' . $file) ) {
-                return $this->loadSource($path . '/' . $file, $extension, $data);
+                $data .= $this->loadSource($path . '/' . $file, $extension);
+            } elseif ( strpos($file, '.' . $extension) !== false ) {
+                $data .= file_get_contents($path . '/' . $file);
             }
-
-            if ( strpos($file, '.' . $extension) !== false ) {
-                $contents = file_get_contents($path . '/' . $file);
-            }
-
-            if( !$contents ) {
-                throw new Exception('Error reading file: ' . $path . '/' . $file);
-            }
-            $data .= $contents;
         }
         return $data;
     }
 
-    private function runJavascript($code, $temp_file, $mode) {
-        $command = self::NODE_BINARY . ' ' . PATH . "js/module.js $mode $code $temp_file" ;
-        return shell_exec($command);
+    private function runJavascript($code, $module_data_file, $mode) {
+        $command = self::NODE_BINARY . ' ' . PATH . "js/module.js $mode $code $module_data_file" ;
+
+        $output = $this->inline;
+        $output .= shell_exec($command);
+
+        return $output;
     }
 }
 

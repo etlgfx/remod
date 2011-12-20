@@ -1,5 +1,26 @@
 <?php
 
+class LayoutModule {
+	public $id, $uuid, $name, $version;
+	public $attrs;
+
+	public function __construct(array $attrs) {
+		$this->attrs = array();
+
+		foreach ($attrs as $k => $v) {
+			$p = strpos($k, ':');
+			$k = $p ? substr($k, $p + 1) : $k;
+
+			if (in_array($k, array('id', 'name', 'uuid', 'version'))) {
+				$this->{$k} = $v;
+			}
+			else {
+				$this->attrs[$k] = $v;
+			}
+		}
+	}
+}
+
 class Layout extends AbstractModel {
 	public $defaults;
 
@@ -18,32 +39,79 @@ class Layout extends AbstractModel {
 	}
 
 	public function render($uri, $request) {
-		$dom = new DOMDocument('1.0', 'UTF-8');
+		$out = '';
 
-		if (!$dom->loadXML($this->_model_data->template)) {
-			throw new Exception('Error opening the layout document');
+		foreach ($this->explode() as $module_chunk) {
+			if ($module_chunk instanceof LayoutModule) {
+				$module = new JSModule('4eb436c8-38fc-426f-a53f-2b5c0acc4267' /*$module_chunk->uuid*/);
+				$out .= $module->render('view', array(), $request, $this->defaults->get($module_chunk->id));
+			}
+			else {
+				$out .= $module_chunk;
+			}
 		}
 
-		$xpath = new DOMXpath($dom);
-		$modules = $xpath->query('//module');
+		return $out;
+	}
 
-		foreach ($modules as $module_node) {
-			$id = trim($module_node->getAttribute('id'));
-			$uuid = '4eb436c8-38fc-426f-a53f-2b5c0acc4267' /*$module_node->getAttribute('m:uuid')*/;
+	private function explode() {
+		return $this->explodeXML();
+	}
 
-			$f = $dom->createDocumentFragment();
+	private function explodeXML() {
+		$split = preg_split('#(<module.*>.*</module>)#imsU', $this->_model_data->template, 0, PREG_SPLIT_DELIM_CAPTURE);
+		$i = 0;
 
-			$module = new JSModule($uuid);
-			//TODO get content sets 
-			if (!$f->appendXML($module->render('view', array(), $request, $this->defaults->get($id)))) {
-				throw new Exception('There was an error appending the XML to the document');
+		foreach ($split as &$piece) {
+			if ($i % 2 != 0) {
+				$dom = new DomDocument('1.0', 'UTF-8');
+				$dom->loadXML('<root xmlns:m="http://platform.syncapse.com/xmlns/module">'. $piece .'</root>');
+
+				$piece = array();
+				foreach ($dom->documentElement->childNodes->item(0)->attributes as $attr) {
+					$piece[$attr->name] = $attr->value;
+				}
+
+				$piece = new LayoutModule($piece);
 			}
 
-			$parent = $module_node->parentNode;
-			$parent->replaceChild($f, $module_node);
+			$i++;
 		}
 
-		return $dom->saveHTML();
+		return $split;
+	}
+
+	private function explodeRegex() {
+		$split = preg_split('#(<module.*>.*</module>)#imsU', $this->_model_data->template, 0, PREG_SPLIT_DELIM_CAPTURE);
+
+		$i = 0;
+
+		foreach ($split as &$piece) {
+			if ($i % 2 != 0) {
+
+				$attribs = array();
+
+				if (preg_match('#<module((\s+([a-z:]+)=("[^"]+"|\'[^\']+\'))+)>#i', $piece, $matches)) {
+					if (preg_match_all('#([a-z:]+)=("([^"]+)"|\'([^\']+)\')#', $matches[1], $attr)) {
+						foreach ($attr[1] as $k => $attr_name) {
+							$attribs[$attr_name] = $attr[3][$k] ? $attr[3][$k] : $attr[4][$k];
+						}
+					}
+					else {
+						throw new Exception('Unable to parse attributes: '. $matches[1]);
+					}
+				}
+				else {
+					throw new Exception('Unable to replace callback module: '. $piece);
+				}
+
+				$piece = new LayoutModule($attribs);
+			}
+
+			$i++;
+		}
+
+		return $split;
 	}
 }
 

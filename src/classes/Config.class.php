@@ -7,12 +7,11 @@ class Config {
     const KEY_NEST_LIMIT = 3;
 
     private function __construct() {
-//        if (file_exists(PATH_CONFIG .'config.ini')) {
-//            $this->config = parse_ini_file(PATH_CONFIG .'config.ini', true);
-//        } else {
-//            $this->config = parse_ini_file(PATH .'/config/config.ini', true);
-//        }
-        $this->config = array();
+        if (file_exists(PATH_CONFIG .'config.ini')) {
+            $this->config = parse_ini_file(PATH_CONFIG .'config.ini', true);
+        } else {
+            $this->config = parse_ini_file(PATH .'/config/config.ini', true);
+        }
     }
 
     protected static function getInstance()

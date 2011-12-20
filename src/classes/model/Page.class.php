@@ -3,6 +3,7 @@
 abstract class Page extends AbstractModel {
 	public $layout;
 	public $properties;
+	public $content_set;
 
 	public function __construct($slug) {
 		$dbh = PDOFactory::PDO();
@@ -22,6 +23,7 @@ abstract class Page extends AbstractModel {
 		if ($stmt->execute() && $this->_model_data = $stmt->fetch(PDO::FETCH_OBJ)) {
 			$this->layout = new Layout($this->_model_data->layout_id);
 			$this->properties = new PageProperties($this->_model_data->id);
+			$this->content_set = new ContentSet($this->_model_data->id);
 		}
 		else {
 			throw new NotFoundException('Page not found: '. var_export($slug, true));
@@ -29,7 +31,7 @@ abstract class Page extends AbstractModel {
 	}
 
 	public function render($uri) {
-        echo $this->layout->render($uri, $this->parseRequest());
+        echo $this->layout->render($uri, $this->parseRequest(), $this->content_set->data);
 	}
 
     /**

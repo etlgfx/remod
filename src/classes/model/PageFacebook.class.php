@@ -5,6 +5,9 @@ class PageFacebook extends Page {
 		if (isset($_REQUEST['signed_request']) && $this->properties->get('secret_key')) {
 			return $this->parseSignedRequest($_REQUEST['signed_request'], $this->properties->get('secret_key'));
 		}
+		else {
+			return array();
+		}
 	}
 
 	private function parseSignedRequest($signed_request, $secret) {

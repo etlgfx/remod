@@ -38,13 +38,13 @@ class Layout extends AbstractModel {
 		$this->defaults = new LayoutDefaults($id);
 	}
 
-	public function render($uri, $request) {
+	public function render($uri, array $request, array $data) {
 		$out = '';
 
 		foreach ($this->explode() as $module_chunk) {
 			if ($module_chunk instanceof LayoutModule) {
 				$module = new JSModule('4eb436c8-38fc-426f-a53f-2b5c0acc4267' /*$module_chunk->uuid*/);
-				$out .= $module->render('view', array(), $request, $this->defaults->get($module_chunk->id));
+				$out .= $module->render('view', array(), $request, $this->defaults->union($module_chunk->id, $data));
 			}
 			else {
 				$out .= $module_chunk;
@@ -113,6 +113,8 @@ class Layout extends AbstractModel {
 
 		return $split;
 	}
+
+
 }
 
 ?>

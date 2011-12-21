@@ -23,6 +23,17 @@ class LayoutDefaults {
 	public function get($module_name) {
 		return isset($this->data[$module_name]) ? $this->data[$module_name] : array();
 	}
+
+	public function union($module_name, array $data) {
+		if (isset($data[$module_name])) {
+			$data = $data[$module_name];
+		}
+		else {
+			$data = array();
+		}
+
+		return $data + $this->get($module_name);
+	}
 }
 
 ?>

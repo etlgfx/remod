@@ -12,8 +12,8 @@ class PageFacebook extends Page {
 
 	private function parseSignedRequest($signed_request, $secret) {
 		//TODO remove this hardcoded crap
-		$signed_request = 'sXUdyth_ygOFaBzxGPqWTHLh2llz8KJRbEQpQ-ueVVw.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQzMzU2MDAsImlzc3VlZF9hdCI6MTMyNDMzMTY5Mywib2F1dGhfdG9rZW4iOiJBQUFBQUg2VE1EUHdCQUpaQ24weFZlNkRIWkJNdjB6cXkxeHoxNFhDbkI1V3BaQnpKR3ZjWkJ0czJRZzFiaEs4eWJ6akxGRlF6VlhOSlJnZ0c5TjRaQ3NkWkFZa1Vwb25MMGt2YnNaQjViakZ2QVpEWkQiLCJ1c2VyIjp7ImNvdW50cnkiOiJjYSIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjU4MDM2MTcyMSJ9';
-		$secret = 'c60723f61d3aa8400df70eace38732f5';
+		//$signed_request = 'sXUdyth_ygOFaBzxGPqWTHLh2llz8KJRbEQpQ-ueVVw.eyJhbGdvcml0aG0iOiJITUFDLVNIQTI1NiIsImV4cGlyZXMiOjEzMjQzMzU2MDAsImlzc3VlZF9hdCI6MTMyNDMzMTY5Mywib2F1dGhfdG9rZW4iOiJBQUFBQUg2VE1EUHdCQUpaQ24weFZlNkRIWkJNdjB6cXkxeHoxNFhDbkI1V3BaQnpKR3ZjWkJ0czJRZzFiaEs4eWJ6akxGRlF6VlhOSlJnZ0c5TjRaQ3NkWkFZa1Vwb25MMGt2YnNaQjViakZ2QVpEWkQiLCJ1c2VyIjp7ImNvdW50cnkiOiJjYSIsImxvY2FsZSI6ImVuX1VTIiwiYWdlIjp7Im1pbiI6MjF9fSwidXNlcl9pZCI6IjU4MDM2MTcyMSJ9';
+		//$secret = 'c60723f61d3aa8400df70eace38732f5';
 		list($encoded_sig, $payload) = explode('.', $signed_request, 2); 
 
 		// decode the data

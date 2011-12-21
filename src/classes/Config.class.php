@@ -30,7 +30,7 @@ class Config {
 
         foreach($config as $value) {
             if( empty($obj[$value]) ) {
-                throw new Exception('Invalid config key: ' . $key);
+                throw new InvalidConfigException('Invalid config key: ' . $key);
             }
             $obj =& $obj[$value];
         }

@@ -17,9 +17,6 @@ class Autoload {
 		if (isset($this->classes[$class])) {
 			require PATH . $this->classes[$class];
 		}
-		else {
-			throw new Exception('Autoloader cannot find this class: '. $class);
-		}
 	}
 
 }

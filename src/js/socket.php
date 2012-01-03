@@ -20,12 +20,11 @@ fwrite($f, json_encode(
             ),
         ),
         'config' => array(),
-        'module' => array(
-            'uuid' => 1234
-        )
+        'module' => '4eb436c8-38fc-426f-a53f-2b5c0acc4267'
     )
 ));
-echo fgets($f) . PHP_EOL;
+
+echo stream_get_contents($f) . PHP_EOL;
 fclose($f);
 
 ?>

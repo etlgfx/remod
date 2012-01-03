@@ -5,6 +5,8 @@ var server = net.createServer(function (socket) {
 	socket.on('data', function (data) {
 		var request = JSON.parse(data.toString('utf8'));
 
+		console.log('request: '+ request);
+
 		socket.end(
 			remod.renderSocket(
 				'view',

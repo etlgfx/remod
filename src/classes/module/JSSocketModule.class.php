@@ -1,6 +1,6 @@
 <?php
 
-class JSModule extends Module {
+class JSSocketModule extends Module {
 	private $id;
 	private $module_path;
 
@@ -14,15 +14,22 @@ class JSModule extends Module {
 			throw new Exception('Invalid render mode: ' . $mode);
 		}
 
-		$temp_data = array(
-			'data' => $data,
-			'request' => $request,
-			'config' => $config,
-		);
-		$temp_file = $this->writeTempData(json_encode($temp_data));
+		if (!$f = fsockopen('unix:///tmp/remod.sock', -1, $errno, $errstr)) {
+			throw new Exception("Unable to open socket: $errno - $errstr");
+		}
 
-		$command = self::NODE_BINARY . " " . PATH . "js/render_module.js " . $this->module_path . " $mode $temp_file";
-		return shell_exec($command);
+		fwrite($f, json_encode(array(
+			'mode' => $mode,
+			'module' => $this->id,
+			'data' => $data,
+			'config' => $config,
+			'request' => $request,
+		)));
+
+		$return = stream_get_contents($f);
+		fclose($f);
+
+		return $return;
 	}
 }
 

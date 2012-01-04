@@ -22,8 +22,8 @@ class JSSocketModule extends Module {
 			'mode' => $mode,
 			'module' => $this->id,
 			'data' => $data,
-			'config' => $config,
 			'request' => $request,
+			'config' => $config,
 		));
 
 		$len = sprintf("%08x", strlen($payload));

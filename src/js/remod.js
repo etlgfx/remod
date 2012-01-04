@@ -1,6 +1,7 @@
-vm = require('vm');
-fs = require('fs');
-path = require('path');
+var vm = require('vm');
+var fs = require('fs');
+var path = require('path');
+var util = require('util');
 
 function readFiles(dir, ext) {
 	// Recursively collect files for use in modules.
@@ -74,6 +75,6 @@ exports.renderCLI = function () {
 
 
 exports.renderSocket = function(mode, module_uuid, module_data) {
-	return render(mode, '/var/www/remod/src/modules/'+ module_uuid, module_data);
+	return render(mode, '/var/www/remod/modules/'+ module_uuid, module_data);
 }
 

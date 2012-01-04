@@ -4,6 +4,7 @@ var remod = require('./remod.js');
 var server = net.createServer(
 	function (socket) {
 		var len = null, crc = null, json = null;
+		var to = null;
 
 		socket.on('data', function (data) {
 			var str = data.toString('utf8');
@@ -19,7 +20,7 @@ var server = net.createServer(
 
 			if (json.length == len) {
 				try {
-					var json = JSON.parse(json);
+					var json = JSON.parse(json, 'utf8');
 
 					socket.end(
 						remod.renderSocket(
@@ -27,16 +28,25 @@ var server = net.createServer(
 							json.module,
 							{
 								'request': json.request,
-								'config': json.data,
+								'config': json.config,
 								'data': json.data,
 							}
 						)
 					);
+
+					clearTimeout(to);
 				}
 				catch (e) {
 					console.log(e +" -:- "+ len +' '+ crc +' '+ json);
 					socket.end("");
 				}
+			}
+
+			if (!to) {
+				to = setTimeout(function() {
+					console.log(str);
+					console.log();
+				}, 200);
 			}
 		});
 	}

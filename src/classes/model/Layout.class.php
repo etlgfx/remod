@@ -43,7 +43,7 @@ class Layout extends AbstractModel {
 
 		foreach ($this->explode() as $module_chunk) {
 			if ($module_chunk instanceof LayoutModule) {
-				$module = Module::factory('4eb436c8-38fc-426f-a53f-2b5c0acc4267' /*$module_chunk->uuid*/);
+				$module = Module::factory(/*'4eb436c8-38fc-426f-a53f-2b5c0acc4267'*/ $module_chunk->uuid);
 				$out .= $module->render('view', array(), $request, $this->defaults->union($module_chunk->id, $data));
 			}
 			else {

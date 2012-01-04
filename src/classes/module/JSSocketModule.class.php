@@ -18,13 +18,18 @@ class JSSocketModule extends Module {
 			throw new Exception("Unable to open socket: $errno - $errstr");
 		}
 
-		fwrite($f, json_encode(array(
+		$payload = json_encode(array(
 			'mode' => $mode,
 			'module' => $this->id,
 			'data' => $data,
 			'config' => $config,
 			'request' => $request,
-		)));
+		));
+
+		$len = sprintf("%08x", strlen($payload));
+		$hash = sprintf("%08x", crc32($payload));
+
+		fwrite($f, $len . $hash . $payload);
 
 		$return = stream_get_contents($f);
 		fclose($f);
